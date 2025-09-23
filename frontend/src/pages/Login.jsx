@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 const Login = ({ onToggleView }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('USER');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -13,26 +12,38 @@ const Login = ({ onToggleView }) => {
     setError(null);
 
     try {
-      // Replace this with your actual Spring Boot login API endpoint
+      console.log('Attempting login with:', { email }); // Don't log password
+      
       const response = await fetch('http://localhost:8080/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password, role }),
+        body: JSON.stringify({ email, password }), // Remove role from login
       });
 
+      const data = await response.json();
+      console.log('Response status:', response.status);
+      console.log('Response data:', data);
+
       if (!response.ok) {
-        // Handle HTTP errors
-        throw new Error('Login failed. Please check your credentials.');
+        throw new Error(data.message || 'Login failed. Please check your credentials.');
       }
 
-      const data = await response.json();
       console.log('Login successful:', data);
-      // Here you would store the JWT token from the backend, e.g., in localStorage or a state management solution
-      // For example: localStorage.setItem('token', data.token);
+      
+      // Store the JWT token and user info
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify({
+          email: data.email,
+          name: data.name,
+          role: data.role
+        }));
+      }
 
-      alert('Login successful! You can now access the dashboard.');
+      alert(`Login successful! Welcome ${data.name || 'User'}`);
+      // Here you would typically redirect to the dashboard
 
     } catch (err) {
       console.error('Login error:', err);
@@ -40,10 +51,6 @@ const Login = ({ onToggleView }) => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleRoleToggle = () => {
-    setRole(role === 'USER' ? 'ADMIN' : 'USER');
   };
 
   return (
@@ -62,16 +69,6 @@ const Login = ({ onToggleView }) => {
         <div className="Login-Card">
           <h2>Login</h2>
           <form onSubmit={handleLoginSubmit}>
-            <div className="Role-Toggle-Container">
-              <label htmlFor="role-toggle">Login as:</label>
-              <div
-                id="role-toggle"
-                className="Role-Toggle-Button"
-                onClick={handleRoleToggle}
-              >
-                {role}
-              </div>
-            </div>
             <input
               type="email"
               placeholder="Email"
@@ -90,7 +87,7 @@ const Login = ({ onToggleView }) => {
               {loading ? 'Logging in...' : 'Login'}
             </button>
           </form>
-          {error && <p className="error-message">{error}</p>}
+          {error && <p className="error-message" style={{color: 'red', marginTop: '10px'}}>{error}</p>}
           <p className="New-User-Text">
               New User? <span onClick={onToggleView}>Register</span>
           </p>
