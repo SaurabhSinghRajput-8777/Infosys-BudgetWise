@@ -1,0 +1,240 @@
+/* Custom styles for the BudgetWise login and signup pages. */
+
+/* General Body and HTML Reset */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #333; /* Dark text color for light theme */
+  background-color: #f0f2f5; /* A light background for the overall page */
+}
+
+/* Landing Page - The main container for the two halves */
+.Landing-Page {
+  display: flex;
+  min-height: 100vh;
+  overflow: hidden;
+  background-color: #f0f2f5;
+}
+
+/* Left Half Styling (Welcome Text & Background) */
+.Left-Half {
+  flex: 1;
+  background-image: url('https://placehold.co/800x1200/d4d9de/4a3a60?text=BudgetWise');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: flex-end;
+  padding: 40px;
+  color: #ffffff;
+  position: relative;
+}
+
+.Left-Half::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 50%);
+  z-index: 1;
+}
+
+.Left-Half-Content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.Left-Half-Content h1 {
+  font-size: 3em;
+  margin-bottom: 10px;
+  line-height: 1.2;
+}
+
+.Left-Half-Content p {
+  font-size: 1.2em;
+  opacity: 0.8;
+}
+
+.Logo {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  font-size: 1.8em;
+  font-weight: bold;
+  color: #fff;
+  z-index: 2;
+}
+
+/* Right Half Styling (Login Card Container) */
+.Right-Half {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f2f5;
+  padding: 20px;
+}
+
+/* Login Card Styling */
+.Login-Card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  padding: 40px 30px;
+  width: 100%;
+  max-width: 450px;
+  text-align: center;
+  color: #333;
+}
+
+.Login-Card h2 {
+  font-size: 2.2em;
+  color: #111;
+  margin-bottom: 25px;
+  font-weight: 600;
+}
+
+/* Form Styling */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+/* The new role toggle container */
+.Role-Toggle-Container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  font-size: 1em;
+}
+
+.Role-Toggle-Container label {
+  color: #555;
+  font-weight: bold;
+}
+
+.Role-Toggle-Button {
+  padding: 8px 16px;
+  background-color: #e2e2e2;
+  border-radius: 20px;
+  color: #555;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+  border: 1px solid #ccc;
+  min-width: 80px;
+}
+
+.Role-Toggle-Button:hover {
+  background-color: #d1d1d1;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  width: calc(100% - 30px);
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  color: #333;
+  font-size: 1em;
+}
+
+input::placeholder, select::placeholder {
+  color: #888;
+  opacity: 0.8;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #4a3a60;
+  box-shadow: 0 0 0 3px rgba(74, 58, 96, 0.2);
+}
+
+button[type="submit"] {
+  width: 100%;
+  padding: 15px;
+  background-color: #4a3a60;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1em;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+  margin-top: 15px;
+}
+
+button[type="submit"]:hover {
+  background-color: #342a42;
+}
+
+/* "New User" text and link */
+.New-User-Text {
+  margin-top: 20px;
+  font-size: 0.95em;
+  color: #888;
+}
+
+.New-User-Text span {
+  color: #4a3a60;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s ease;
+  cursor: pointer;
+}
+
+.New-User-Text span:hover {
+  text-decoration: underline;
+  color: #655280;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .Landing-Page {
+    flex-direction: column;
+  }
+
+  .Left-Half {
+    min-height: 250px;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .Left-Half::before {
+    background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 100%);
+  }
+
+  .Left-Half-Content h1 {
+    font-size: 2em;
+  }
+
+  .Left-Half-Content p {
+    font-size: 1em;
+  }
+
+  .Logo {
+    position: static;
+    margin-bottom: 15px;
+  }
+
+  .Login-Card {
+    padding: 30px 25px;
+    box-shadow: none;
+    border-radius: 0;
+    max-width: none;
+  }
+
+  h1 {
+    margin-bottom: 15px;
+  }
+}
