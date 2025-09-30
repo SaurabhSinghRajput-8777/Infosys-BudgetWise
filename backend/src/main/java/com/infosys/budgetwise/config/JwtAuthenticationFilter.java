@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -24,6 +26,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     private CustomUserDetailsService userDetailsService;
+
+    // Define public URLs that should not be filtered
+    private static final List<String> PUBLIC_URLS = Arrays.asList(
+            "/api/auth/login",
+            "/api/auth/signup"
+    );
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        // Bypass the filter for public authentication URLs
+        return PUBLIC_URLS.stream().anyMatch(url -> request.getRequestURI().startsWith(url));
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

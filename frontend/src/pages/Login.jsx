@@ -42,7 +42,7 @@ const Login = ({ onToggleView, onLoginSuccess }) => {
         }));
       }
 
-      alert(`Login successful! Welcome ${data.name || 'User'}`);
+      // alert(`Login successful! Welcome ${data.name || 'User'}`);  // This line has been removed.
       onLoginSuccess(data.role);
 
     } catch (err) {

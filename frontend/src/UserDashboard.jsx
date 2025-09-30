@@ -35,7 +35,7 @@ const UserDashboard = ({ onLogout }) => {
     const renderPage = () => {
         switch (currentPage) {
             case 'Dashboard':
-                return <Dashboard />;
+                return <Dashboard onPageChange={handlePageChange} />;
             case 'Budget':
                 return <Budget onBudgetSetupComplete={handleBudgetSetupComplete} />;
             case 'Transaction':

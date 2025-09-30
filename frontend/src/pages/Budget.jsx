@@ -18,7 +18,7 @@ const Budget = ({ onBudgetSetupComplete }) => {
     };
 
     return (
-        <div className="budget-page-container">
+        <div className="budget-page-container page-container">
             <div className="budget-setup-card">
                 <h2>Set Your Financial Goals</h2>
                 <p>Please enter your monthly financial details to get started.</p>
