@@ -1,51 +1,65 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Button from '../components/Button.jsx';
 
 const Budget = ({ onBudgetSetupComplete }) => {
-    const [income, setIncome] = useState('');
-    const [savingGoal, setSavingGoal] = useState('');
-    const [targetExpenses, setTargetExpenses] = useState(null);
-    const [categoryExpenses, setCategoryExpenses] = useState({
+    // Default initial state for easy resetting
+    const initialCategoryExpenses = {
         "Food": '',
         "Transport": '',
         "Bills": '',
         "Rent": '',
         "Shopping": '',
         "Miscellaneous": ''
-    });
-    const [remainingExpenses, setRemainingExpenses] = useState(null);
+    };
+    
+    const [income, setIncome] = useState('');
+    const [savingGoal, setSavingGoal] = useState('');
+    const [targetExpenses, setTargetExpenses] = useState(null);
+    const [categoryExpenses, setCategoryExpenses] = useState(initialCategoryExpenses);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [notification, setNotification] = useState(null);
 
-    const handleCalculateBudget = () => {
+    // Calculate sum of all manually entered allocations
+    const manuallyAllocatedTotal = Object.values(categoryExpenses)
+        .reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
+    
+    // Calculate remaining funds based on the target and manual allocations
+    const remainingExpenses = targetExpenses !== null ? targetExpenses - manuallyAllocatedTotal : null;
+
+    // Effect to calculate target expenses in real-time
+    useEffect(() => {
         const incomeVal = parseFloat(income) || 0;
         const savingGoalVal = parseFloat(savingGoal) || 0;
         const calculatedTarget = incomeVal - savingGoalVal;
-        
+
         setTargetExpenses(calculatedTarget);
-        setRemainingExpenses(calculatedTarget);
-        
-        // Reset category expenses when recalculating
-        setCategoryExpenses({
-            "Food": '',
-            "Transport": '',
-            "Bills": '',
-            "Rent": '',
-            "Shopping": '',
-            "Miscellaneous": ''
-        });
-    };
+    }, [income, savingGoal]);
+
+
+    // --- Handlers ---
 
     const handleCategoryChange = (e, category) => {
         const value = e.target.value === '' ? '' : parseFloat(e.target.value);
-        const newExpenses = { ...categoryExpenses, [category]: value };
-        setCategoryExpenses(newExpenses);
+        
+        // Ensure input is non-negative
+        if (value < 0) return;
 
-        const currentTotal = Object.values(newExpenses).reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
-        const newRemaining = targetExpenses - currentTotal;
-        setRemainingExpenses(newRemaining);
+        setCategoryExpenses(prevExpenses => ({
+            ...prevExpenses,
+            [category]: value
+        }));
+    };
+    
+    const handleClearAll = () => {
+        // Reset all state variables
+        setIncome('');
+        setSavingGoal('');
+        setTargetExpenses(null);
+        setCategoryExpenses(initialCategoryExpenses);
+        setError(null);
+        setNotification(null);
     };
 
     const handleBudgetSubmit = async (e) => {
@@ -53,7 +67,7 @@ const Budget = ({ onBudgetSetupComplete }) => {
         setLoading(true);
         setError(null);
         setNotification(null);
-        
+
         const token = localStorage.getItem('token');
         if (!token) {
             setError('Authentication token not found. Please log in again.');
@@ -61,11 +75,20 @@ const Budget = ({ onBudgetSetupComplete }) => {
             return;
         }
 
-        // Use a small epsilon for float comparison
-        if (remainingExpenses !== null && Math.abs(remainingExpenses) > 0.01) {
-            setError('Please allocate all remaining funds. Remaining: $' + remainingExpenses.toFixed(2));
-            setLoading(false);
-            return;
+        const currentRemaining = targetExpenses - manuallyAllocatedTotal;
+        
+        // Prepare data for submission: start with all manual allocations
+        const dataForSubmission = { ...categoryExpenses };
+
+        // Auto-assign any positive remainder to Miscellaneous
+        if (currentRemaining > 0) {
+            dataForSubmission["Miscellaneous"] = parseFloat(currentRemaining.toFixed(2));
+        } else if (currentRemaining < 0) {
+            // If negative, use what the user entered for Miscellaneous (if anything)
+            dataForSubmission["Miscellaneous"] = parseFloat(categoryExpenses["Miscellaneous"] || 0);
+        } else {
+            // If perfectly balanced (currentRemaining is ~0)
+             dataForSubmission["Miscellaneous"] = parseFloat(categoryExpenses["Miscellaneous"] || 0);
         }
 
         const budgetData = {
@@ -73,8 +96,8 @@ const Budget = ({ onBudgetSetupComplete }) => {
             savingGoal: parseFloat(savingGoal),
             targetExpenses: parseFloat(targetExpenses),
             categoryExpenses: Object.fromEntries(
-                Object.entries(categoryExpenses)
-                    .filter(([key, val]) => val !== '' && val !== null)
+                Object.entries(dataForSubmission)
+                    .filter(([, val]) => val !== null && parseFloat(val) > 0)
                     .map(([key, val]) => [key, parseFloat(val)])
             )
         };
@@ -86,7 +109,7 @@ const Budget = ({ onBudgetSetupComplete }) => {
                     'Content-Type': 'application/json'
                 }
             });
-            
+
             setNotification('Budget saved successfully!');
             setTimeout(() => {
                 setNotification(null);
@@ -99,14 +122,43 @@ const Budget = ({ onBudgetSetupComplete }) => {
             setLoading(false);
         }
     };
+    
+    // --- Render Helpers ---
+    
+    const renderRemainingMessage = () => {
+        if (remainingExpenses === null || targetExpenses <= 0) return null;
+        
+        const fixedRemaining = Math.abs(remainingExpenses).toFixed(2);
+        
+        let message, className;
 
-    const isSavable = targetExpenses !== null && Math.abs(remainingExpenses) < 0.01;
+        // Check for deficit (over-allocation) - red
+        if (remainingExpenses < -0.01) {
+            message = `You have over-allocated by $${fixedRemaining}. Please reduce your spending plans.`;
+            className = 'deficit';
+        // Check for perfect balance - green (using surplus styling)
+        } else if (Math.abs(remainingExpenses) < 0.01) {
+             message = 'Budget is perfectly balanced!';
+             className = 'surplus'; // Use surplus class for green color
+        } else {
+            // Do not show message for surplus, as requested, only show for deficit or balance
+            return null;
+        }
+        
+        return <div className={`remaining-message ${className}`}>{message}</div>;
+    };
+    
+    const overallProgress = targetExpenses > 0 
+        ? Math.min((manuallyAllocatedTotal / targetExpenses) * 100, 100) 
+        : 0;
+
+    const isSaveDisabled = loading || income === '' || savingGoal === '';
 
     return (
         <div className="budget-page-container">
             <div className="budget-setup-card">
                 <h2>Set Your Financial Goals</h2>
-                <p>Please enter your monthly financial details to get started.</p>
+                <p>Define your monthly income and savings first. Expenses will be auto-calculated.</p>
                 <form onSubmit={handleBudgetSubmit}>
                     <input
                         type="number"
@@ -122,33 +174,55 @@ const Budget = ({ onBudgetSetupComplete }) => {
                         onChange={(e) => setSavingGoal(e.target.value)}
                         required
                     />
-                    <Button type="button" onClick={handleCalculateBudget}>Calculate Target Expenses</Button>
-                    
-                    {targetExpenses !== null && (
-                        <div style={{ marginTop: '20px' }}>
-                            <p>Calculated Target Expenses: **${targetExpenses.toFixed(2)}**</p>
-                            <p className={remainingExpenses !== 0 ? 'remaining-negative' : ''}>Remaining to Allocate: **${remainingExpenses.toFixed(2)}**</p>
+
+                    {targetExpenses !== null && targetExpenses > 0 && (
+                        <div className="budget-progress-section">
+                            {renderRemainingMessage()}
+
+                            {/* Overall Allocation Progress Bar */}
+                            <div className="budget-progress-container">
+                                <div className="progress-label">
+                                    <span>Overall Expense Allocation</span>
+                                    <span>${manuallyAllocatedTotal.toFixed(2)} / ${targetExpenses.toFixed(2)}</span>
+                                </div>
+                                <div className="progress-bar-wrapper">
+                                    <div className="progress-bar-fill" style={{ width: `${overallProgress}%` }}></div>
+                                </div>
+                            </div>
                             
+                            {/* Category Allocations */}
                             <div className="category-allocation">
                                 {Object.keys(categoryExpenses).map(category => (
                                     <div key={category} className="category-item">
                                         <label>{category}:</label>
                                         <input
                                             type="number"
-                                            placeholder={`Allocated to ${category}`}
-                                            value={categoryExpenses[category]}
+                                            placeholder={`Amount for ${category}`}
+                                            value={
+                                                category === "Miscellaneous" 
+                                                ? (remainingExpenses > 0.01 ? remainingExpenses.toFixed(2) : (Math.abs(remainingExpenses) < 0.01 ? '0' : categoryExpenses[category]))
+                                                : categoryExpenses[category]
+                                            }
                                             onChange={(e) => handleCategoryChange(e, category)}
                                             min="0"
+                                            // The input field is marked readOnly and styled differently when auto-filling the surplus
+                                            readOnly={category === "Miscellaneous" && remainingExpenses > 0}
+                                            style={category === "Miscellaneous" && remainingExpenses > 0 ? {backgroundColor: '#2D3748'} : {}}
                                         />
                                     </div>
                                 ))}
                             </div>
                         </div>
                     )}
-                    
-                    <Button type="submit" disabled={loading || !isSavable}>
-                        {loading ? 'Saving...' : 'Save Budget'}
-                    </Button>
+
+                    <div className="profile-action-buttons" style={{ marginTop: '30px' }}>
+                        <Button type="button" onClick={handleClearAll} style={{ backgroundColor: '#4A5568', color: '#F8F9FA', flex: '1' }}>
+                            Clear All
+                        </Button>
+                        <Button type="submit" disabled={isSaveDisabled} style={{ flex: '2' }}>
+                            {loading ? 'Saving...' : 'Save Budget'}
+                        </Button>
+                    </div>
                 </form>
                 {notification && <div className="notification-message success-message">{notification}</div>}
                 {error && <p style={{color: 'red', marginTop: '10px'}}>{error}</p>}

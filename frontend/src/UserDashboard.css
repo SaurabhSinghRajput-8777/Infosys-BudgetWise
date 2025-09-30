@@ -218,7 +218,7 @@
 }
 
 
-/* Budget Page Styles */
+/* Budget Page Refined Styles */
 .budget-page-container {
     width: 100%;
     max-width: 600px;
@@ -228,12 +228,20 @@
 }
 
 .budget-setup-card {
-    background-color: #1C2B40;
-    border-radius: 16px;
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
-    padding: 40px;
+    background: linear-gradient(160deg, #1C2B40 0%, #0A192F 100%);
+    border-radius: 18px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+    padding: 45px;
     width: 100%;
     text-align: center;
+    transition: transform 0.3s ease;
+    /* Ensure no internal element forces the card wider than intended */
+    box-sizing: border-box; 
+    overflow: hidden; /* Prevent content from visually spilling outside rounded corners */
+}
+
+.budget-setup-card:hover {
+    transform: translateY(-5px);
 }
 
 .budget-setup-card h2 {
@@ -247,17 +255,19 @@
     margin-bottom: 25px;
 }
 
+/* Inputs */
 .budget-setup-card input[type="number"] {
   width: 100%;
-  padding: 15px;
+  padding: 14px;
   border: 1px solid #4A5568;
   border-radius: 10px;
-  background-color: #1C2B40;
+  background-color: #0A192F;
   color: #F8F9FA;
   font-size: 1em;
-  box-sizing: border-box;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);
   transition: all 0.3s ease;
   margin-bottom: 20px;
+  box-sizing: border-box; /* Crucial for preventing overflow */
 }
 
 .budget-setup-card input[type="number"]::placeholder {
@@ -265,32 +275,116 @@
 }
 
 .budget-setup-card input[type="number"]:focus {
-  outline: none;
   border-color: #FFD700;
-  box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.25);
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3);
+  outline: none;
 }
 
-.budget-setup-card button[type="submit"] {
+/* Category Grid - Enhanced Responsiveness */
+.category-allocation {
+    display: grid;
+    /* Adjusted minmax for better mobile handling: always at least one column (minmax(220px, 1fr)) */
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+    margin-bottom: 20px; 
+    width: 100%; /* Ensure it spans the full width of the container */
+}
+
+/* Category Boxes */
+.category-item {
+    background-color: #1C2B40;
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    transition: transform 0.25s ease, border 0.25s ease;
+    border: 1px solid transparent;
+    box-sizing: border-box; /* Essential for grid elements */
+}
+
+.category-item:hover {
+    transform: translateY(-3px);
+    border: 1px solid #FFD700;
+}
+
+.category-item label {
+    font-size: 1.1em;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #F8F9FA;
+}
+
+.category-item input {
+    /* Override global input style margin for compact category cards */
+    margin-bottom: 0 !important; 
+    box-sizing: border-box;
+}
+
+/* Auto-fill Button (Hidden) */
+.autofill-button {
+    display: none; 
+}
+
+/* Remaining Funds Message */
+.remaining-message {
+    margin-top: 15px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box; 
+    max-width: 100%; /* Ensure message container respects parent width */
+}
+
+.remaining-message.surplus {
+    background-color: rgba(76, 175, 80, 0.15);
+    color: #4caf50;
+}
+
+.remaining-message.deficit {
+    background-color: rgba(229, 62, 62, 0.15);
+    color: #e53e3e;
+}
+
+.remaining-message.balanced {
+    background-color: rgba(255, 215, 0, 0.15);
+    color: #FFD700;
+}
+
+/* Progress Bars */
+.budget-progress-container {
+  margin-top: 20px;
+  text-align: left;
   width: 100%;
-  padding: 16px;
-  background-color: #FFD700;
-  color: #1C2B40;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 1.1em;
-  font-weight: 600;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-  margin-top: 10px;
-  letter-spacing: 0.5px;
 }
 
-.budget-setup-card button[type="submit"]:hover {
-  background-color: #E6C200;
-  transform: translateY(-2px);
+.progress-label {
+  font-size: 0.95rem;
+  color: #A0AEC0;
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
 }
 
-/* Profile Page Specific Styles */
+.progress-bar-wrapper {
+  background-color: #2D3748;
+  border-radius: 8px;
+  height: 14px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #FFD700, #E6C200);
+  transition: width 0.6s ease;
+  border-radius: 8px;
+}
+
+/* Profile Page Specific Styles (kept for context) */
 .profile-page-container {
     display: flex;
     flex-direction: column;
@@ -426,6 +520,14 @@
 .logout-button:hover {
     background-color: #c82333;
     transform: scale(1.02);
+}
+
+.profile-button-container {
+    width: 100%;
+    max-width: 500px;
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
 }
 
 /* Old styles to be removed in future cleanups */
