@@ -4,7 +4,6 @@ const Signup = ({ onToggleView }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('USER');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -14,17 +13,15 @@ const Signup = ({ onToggleView }) => {
     setError(null);
 
     try {
-      // Replace this with your actual Spring Boot signup API endpoint
       const response = await fetch('http://localhost:8080/api/auth/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, email, password, role }),
+        body: JSON.stringify({ name, email, password, role: 'USER' }),
       });
 
       if (!response.ok) {
-        // Handle HTTP errors
         throw new Error('Signup failed. The user may already exist.');
       }
 
@@ -32,7 +29,7 @@ const Signup = ({ onToggleView }) => {
       console.log('Signup successful:', data);
 
       alert('Signup successful! You can now log in.');
-      onToggleView(); // Automatically switch to the login page
+      onToggleView();
 
     } catch (err) {
       console.error('Signup error:', err);
@@ -40,10 +37,6 @@ const Signup = ({ onToggleView }) => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleRoleToggle = () => {
-    setRole(role === 'USER' ? 'ADMIN' : 'USER');
   };
 
   return (
@@ -62,16 +55,6 @@ const Signup = ({ onToggleView }) => {
         <div className="Login-Card">
           <h2>Signup</h2>
           <form onSubmit={handleSignupSubmit}>
-            <div className="Role-Toggle-Container">
-              <label htmlFor="role-toggle">Signup as:</label>
-              <div
-                id="role-toggle"
-                className="Role-Toggle-Button"
-                onClick={handleRoleToggle}
-              >
-                {role}
-              </div>
-            </div>
             <input
               type="text"
               placeholder="Full Name"

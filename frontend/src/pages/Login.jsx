@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 
-const Login = ({ onToggleView }) => {
+const Login = ({ onToggleView, onLoginSuccess }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('USER');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -12,14 +13,14 @@ const Login = ({ onToggleView }) => {
     setError(null);
 
     try {
-      console.log('Attempting login with:', { email }); // Don't log password
+      console.log('Attempting login with:', { email, role });
       
       const response = await fetch('http://localhost:8080/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }), // Remove role from login
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
@@ -32,7 +33,6 @@ const Login = ({ onToggleView }) => {
 
       console.log('Login successful:', data);
       
-      // Store the JWT token and user info
       if (data.token) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify({
@@ -43,7 +43,7 @@ const Login = ({ onToggleView }) => {
       }
 
       alert(`Login successful! Welcome ${data.name || 'User'}`);
-      // Here you would typically redirect to the dashboard
+      onLoginSuccess(data.role);
 
     } catch (err) {
       console.error('Login error:', err);
@@ -51,6 +51,10 @@ const Login = ({ onToggleView }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleRoleToggle = () => {
+    setRole(role === 'USER' ? 'ADMIN' : 'USER');
   };
 
   return (
@@ -69,6 +73,16 @@ const Login = ({ onToggleView }) => {
         <div className="Login-Card">
           <h2>Login</h2>
           <form onSubmit={handleLoginSubmit}>
+            <div className="Role-Toggle-Container">
+              <label htmlFor="role-toggle">Login as:</label>
+              <div
+                id="role-toggle"
+                className="Role-Toggle-Button"
+                onClick={handleRoleToggle}
+              >
+                {role}
+              </div>
+            </div>
             <input
               type="email"
               placeholder="Email"
