@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Chart } from 'react-google-charts';
 import axios from 'axios';
-import './Dashboard.css'; // Add a new CSS file for dashboard styles
+import './Dashboard.css';
 
 const getGreeting = () => {
     const hour = new Date().getHours();
@@ -20,6 +20,7 @@ const Dashboard = () => {
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [incomeSource, setIncomeSource] = useState('budget'); // 'budget' or 'transactions'
 
     useEffect(() => {
         const fetchData = async () => {
@@ -55,9 +56,14 @@ const Dashboard = () => {
             .filter(t => t.type === 'EXPENSE')
             .reduce((sum, t) => sum + parseFloat(t.amount), 0);
         
-        const totalIncome = transactions
+        const transactionIncome = transactions
             .filter(t => t.type === 'INCOME')
             .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+
+        // Use budget income if using budget source, otherwise use transaction income
+        const totalIncome = incomeSource === 'budget' && budget?.monthlyIncome 
+            ? parseFloat(budget.monthlyIncome) 
+            : transactionIncome;
 
         const expensesByCategory = transactions
             .filter(t => t.type === 'EXPENSE')
@@ -66,11 +72,12 @@ const Dashboard = () => {
                 return acc;
             }, {});
             
-        return { totalExpenses, totalIncome, expensesByCategory };
+        return { totalExpenses, totalIncome, transactionIncome, expensesByCategory };
     };
 
-    const { totalExpenses, totalIncome, expensesByCategory } = calculateTotals();
+    const { totalExpenses, totalIncome, transactionIncome, expensesByCategory } = calculateTotals();
     const netSavings = totalIncome - totalExpenses;
+    
     const expenseData = [
         ['Category', 'Amount'],
         ...Object.entries(expensesByCategory).map(([category, amount]) => [category, amount])
@@ -107,6 +114,7 @@ const Dashboard = () => {
             titleTextStyle: { color: '#A0AEC0' },
             textStyle: { color: '#A0AEC0' },
         },
+        colors: ['#FFD700'],
     };
 
     const expenseProgress = budget?.targetExpenses ? Math.min((totalExpenses / budget.targetExpenses) * 100, 100) : 0;
@@ -126,10 +134,31 @@ const Dashboard = () => {
             
             <div className="dashboard-content-card">
                 <h3 className="card-title">Monthly Summary</h3>
+                
+                {/* Income Source Toggle */}
+                <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
+                    <label style={{ color: '#A0AEC0', marginRight: '10px' }}>Income Source:</label>
+                    <select 
+                        value={incomeSource} 
+                        onChange={(e) => setIncomeSource(e.target.value)}
+                        style={{ 
+                            padding: '5px 10px', 
+                            borderRadius: '5px', 
+                            backgroundColor: '#2D3748',
+                            color: '#F8F9FA',
+                            border: '1px solid #4A5568'
+                        }}
+                    >
+                        <option value="budget">Budget Income (${budget?.monthlyIncome?.toFixed(2) || '0.00'})</option>
+                        <option value="transactions">Transaction Income (${transactionIncome.toFixed(2)})</option>
+                    </select>
+                </div>
+
                 <div className="summary-grid">
                     <div className="summary-item">
                         <span>Total Income:</span>
                         <span className="summary-value income">${totalIncome.toFixed(2)}</span>
+                        {incomeSource === 'budget' && <span style={{ fontSize: '0.8em', color: '#A0AEC0' }}></span>}
                     </div>
                     <div className="summary-item">
                         <span>Total Expenses:</span>
@@ -148,9 +177,9 @@ const Dashboard = () => {
                 <div className="progress-bar-container">
                     <div className="progress-bar" style={{ width: `${expenseProgress}%` }}></div>
                 </div>
-                <p>Saving Progress against Goal: ${netSavings.toFixed(2)} / ${budget?.savingGoal?.toFixed(2) || 'N/A'}</p>
+                <p style={{ marginTop: '1rem' }}>Saving Progress against Goal: ${netSavings.toFixed(2)} / ${budget?.savingGoal?.toFixed(2) || 'N/A'}</p>
                 <div className="progress-bar-container">
-                    <div className="progress-bar" style={{ width: `${savingProgress}%`, backgroundColor: '#4caf50' }}></div>
+                    <div className="progress-bar" style={{ width: `${savingProgress}%`, backgroundColor: netSavings >= 0 ? '#4caf50' : '#e53e3e' }}></div>
                 </div>
             </div>
 
