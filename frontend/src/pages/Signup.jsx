@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Button from '../components/Button.jsx'; // New import
 
 const Signup = ({ onToggleView }) => {
   const [name, setName] = useState('');
@@ -76,9 +77,9 @@ const Signup = ({ onToggleView }) => {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-            <button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading}>
               {loading ? 'Signing up...' : 'Signup'}
-            </button>
+            </Button>
           </form>
           {error && <p className="error-message">{error}</p>}
           <p className="New-User-Text">

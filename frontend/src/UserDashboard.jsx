@@ -35,7 +35,7 @@ const UserDashboard = ({ onLogout }) => {
     const renderPage = () => {
         switch (currentPage) {
             case 'Dashboard':
-                return <Dashboard onPageChange={handlePageChange} />;
+                return <Dashboard />;
             case 'Budget':
                 return <Budget onBudgetSetupComplete={handleBudgetSetupComplete} />;
             case 'Transaction':
@@ -49,6 +49,12 @@ const UserDashboard = ({ onLogout }) => {
 
     return (
         <div className="user-dashboard-container">
+            {isFirstTimeUser && currentPage === 'Budget' && (
+                <div className="onboarding-message">
+                    <h3>Welcome! 👋</h3>
+                    <p>It looks like this is your first time here. Let's set up your budget to get started.</p>
+                </div>
+            )}
             <Header currentPage={currentPage} onPageChange={handlePageChange} />
             <main className="user-dashboard-main-content">
                 {renderPage()}

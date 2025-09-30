@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Login from './pages/Login.jsx';
 import Signup from './pages/Signup.jsx';
 import UserDashboard from './UserDashboard.jsx';
+import AdminDashboard from './pages/AdminDashboard.jsx'; // New import
 import './index.css';
 
 const App = () => {
@@ -37,11 +38,7 @@ const App = () => {
       if (userRole === 'USER') {
         return <UserDashboard onLogout={handleLogout} />;
       } else if (userRole === 'ADMIN') {
-        // We will implement this later. For now, a simple message.
-        return <div>
-          <h2>Admin Dashboard</h2>
-          <button onClick={handleLogout}>Logout</button>
-        </div>;
+        return <AdminDashboard onLogout={handleLogout} />;
       }
     } else {
       if (isLoginView) {

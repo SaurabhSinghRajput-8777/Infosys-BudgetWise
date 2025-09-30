@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -91,6 +92,37 @@ public class AuthController {
             return new ResponseEntity<>(Collections.singletonMap("message", "Invalid credentials!"), HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
             return new ResponseEntity<>(Collections.singletonMap("message", "Login failed: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @PutMapping("/profile")
+    public ResponseEntity<?> updateProfile(@AuthenticationPrincipal UserDetails userDetails, @RequestBody AuthRequest authRequest) {
+        try {
+            User user = userRepository.findByEmail(userDetails.getUsername())
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
+
+            if (authRequest.getName() != null && !authRequest.getName().isEmpty()) {
+                user.setName(authRequest.getName());
+            }
+
+            if (authRequest.getEmail() != null && !authRequest.getEmail().isEmpty()) {
+                if (!authRequest.getEmail().equals(user.getEmail()) && userRepository.existsByEmail(authRequest.getEmail())) {
+                    return new ResponseEntity<>(Collections.singletonMap("message", "Email is already taken!"), HttpStatus.BAD_REQUEST);
+                }
+                user.setEmail(authRequest.getEmail());
+            }
+
+            if (authRequest.getPassword() != null && !authRequest.getPassword().isEmpty()) {
+                user.setPassword(passwordEncoder.encode(authRequest.getPassword()));
+            }
+
+            userRepository.save(user);
+
+            return ResponseEntity.ok(Collections.singletonMap("message", "Profile updated successfully!"));
+        } catch (UsernameNotFoundException e) {
+            return new ResponseEntity<>(Collections.singletonMap("message", e.getMessage()), HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(Collections.singletonMap("message", "Profile update failed: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

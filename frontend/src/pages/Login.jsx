@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Button from '../components/Button.jsx'; // New import
 
 const Login = ({ onToggleView, onLoginSuccess }) => {
   const [email, setEmail] = useState('');
@@ -13,8 +14,6 @@ const Login = ({ onToggleView, onLoginSuccess }) => {
     setError(null);
 
     try {
-      console.log('Attempting login with:', { email, role });
-      
       const response = await fetch('http://localhost:8080/api/auth/login', {
         method: 'POST',
         headers: {
@@ -24,14 +23,10 @@ const Login = ({ onToggleView, onLoginSuccess }) => {
       });
 
       const data = await response.json();
-      console.log('Response status:', response.status);
-      console.log('Response data:', data);
 
       if (!response.ok) {
         throw new Error(data.message || 'Login failed. Please check your credentials.');
       }
-
-      console.log('Login successful:', data);
       
       if (data.token) {
         localStorage.setItem('token', data.token);
@@ -42,7 +37,7 @@ const Login = ({ onToggleView, onLoginSuccess }) => {
         }));
       }
 
-      // alert(`Login successful! Welcome ${data.name || 'User'}`);  // This line has been removed.
+      alert(`Login successful! Welcome ${data.name || 'User'}`);
       onLoginSuccess(data.role);
 
     } catch (err) {
@@ -97,9 +92,9 @@ const Login = ({ onToggleView, onLoginSuccess }) => {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-            <button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading}>
               {loading ? 'Logging in...' : 'Login'}
-            </button>
+            </Button>
           </form>
           {error && <p className="error-message" style={{color: 'red', marginTop: '10px'}}>{error}</p>}
           <p className="New-User-Text">
