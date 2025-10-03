@@ -18,7 +18,6 @@ const Dashboard = ({ onLogout }) => {
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [incomeSource, setIncomeSource] = useState('budget');
 
     const fetchDashboardData = async () => {
         setLoading(true);
@@ -63,9 +62,7 @@ const Dashboard = ({ onLogout }) => {
             .filter(t => t.type === 'INCOME')
             .reduce((sum, t) => sum + parseFloat(t.amount), 0);
 
-        const totalIncome = incomeSource === 'budget' && budget?.monthlyIncome 
-            ? parseFloat(budget.monthlyIncome) 
-            : transactionIncome;
+        const totalIncome = (parseFloat(budget?.monthlyIncome) || 0) + transactionIncome;
 
         const expensesByCategory = transactions
             .filter(t => t.type === 'EXPENSE')
@@ -212,6 +209,9 @@ const Dashboard = ({ onLogout }) => {
                     <div className="ai-tips-container">
                         <p className="ai-tip-statement">
                             Dining out is 25% of your budget, higher than average.
+                        </p>
+                        <p className="ai-tip-statement">
+                            You've spent 75% of your budgeted amount for Bills this month.
                         </p>
                         <p className="ai-tip-statement">
                             You could save ₹3,000/month if you reduce shopping spend by 10%.
