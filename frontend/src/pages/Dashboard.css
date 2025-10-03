@@ -653,7 +653,7 @@
     border-radius: 8px;
     margin-bottom: 0.75rem;
     color: #F8F9FA;
-    font-size: 0.95em;
+    font-size: 1em; /* Updated font size */
     box-sizing: border-box;
 }
 .reminders-list svg {

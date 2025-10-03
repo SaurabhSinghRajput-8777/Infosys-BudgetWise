@@ -624,3 +624,10 @@
 .profile-option {
     display: none;
 }
+
+/* Footer Styling */
+footer {
+    text-align: center;
+    padding: 0.20rem;
+    background-color: #1C2B40;
+}
