@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Header from '../Header.jsx';
-import Footer from '../Footer.jsx';
-import '../UserDashboard.css';
+import Button from '../components/Button.jsx';
+import './AdminDashboard.css';
 
-const AdminDashboard = ({ onLogout }) => {
+const AdminDashboard = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -42,7 +41,7 @@ const AdminDashboard = ({ onLogout }) => {
                 await axios.delete(`http://localhost:8080/api/admin/users/${id}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                alert('User deleted successfully!');
+                alert('User deleted successfully!'); 
                 fetchUsers(); // Refresh the list
             } catch (error) {
                 console.error('Failed to delete user:', error);
@@ -62,7 +61,8 @@ const AdminDashboard = ({ onLogout }) => {
                 headers: { Authorization: `Bearer ${token}` }
             });
             alert('New admin user created successfully!');
-            setNewAdmin({ name: '', email: '', password: '' });
+            // This is the crucial line that clears the state, and thus the form inputs
+            setNewAdmin({ name: '', email: '', password: '' }); 
             fetchUsers(); // Refresh user list
         } catch (err) {
             console.error('Failed to create admin:', err);
@@ -77,80 +77,80 @@ const AdminDashboard = ({ onLogout }) => {
     }, []);
 
     return (
-        <div className="user-dashboard-container">
-            <Header currentPage="Admin" />
-            <main className="user-dashboard-main-content">
-                <div className="page-container">
-                    <h2>Admin Dashboard</h2>
-                    <div className="admin-content-card">
-                        <h3 className="card-title">User Management</h3>
-                        <div className="admin-table-container">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Role</th>
-                                        <th>Actions</th>
+        <div className="content-card-wrapper">
+            <h2>Admin Dashboard</h2>
+            <div className="admin-content-card">
+                <h3 className="card-title">User Management</h3>
+                <div className="admin-table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loading ? (
+                                <tr><td colSpan="5">Loading users...</td></tr>
+                            ) : error ? (
+                                <tr><td colSpan="5" style={{ color: 'red' }}>{error}</td></tr>
+                            ) : (
+                                users.map(user => (
+                                    <tr key={user.id}>
+                                        <td>{user.id}</td>
+                                        <td>{user.name}</td>
+                                        <td>{user.email}</td>
+                                        <td>{user.role}</td>
+                                        <td>
+                                            <Button 
+                                                onClick={() => handleDeleteUser(user.id)} 
+                                                className="delete-button"
+                                                style={{ width: 'auto', padding: '8px 12px' }}
+                                            >
+                                                Delete
+                                            </Button>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    {loading ? (
-                                        <tr><td colSpan="5">Loading users...</td></tr>
-                                    ) : error ? (
-                                        <tr><td colSpan="5" style={{ color: 'red' }}>{error}</td></tr>
-                                    ) : (
-                                        users.map(user => (
-                                            <tr key={user.id}>
-                                                <td>{user.id}</td>
-                                                <td>{user.name}</td>
-                                                <td>{user.email}</td>
-                                                <td>{user.role}</td>
-                                                <td>
-                                                    <button onClick={() => handleDeleteUser(user.id)}>Delete</button>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div className="admin-content-card" style={{ marginTop: '2rem' }}>
-                        <h3 className="card-title">Create New Admin</h3>
-                        <form className="create-admin-form" onSubmit={handleCreateAdmin}>
-                            <input
-                                type="text"
-                                placeholder="Full Name"
-                                value={newAdmin.name}
-                                onChange={(e) => setNewAdmin({ ...newAdmin, name: e.target.value })}
-                                required
-                            />
-                            <input
-                                type="email"
-                                placeholder="Email"
-                                value={newAdmin.email}
-                                onChange={(e) => setNewAdmin({ ...newAdmin, email: e.target.value })}
-                                required
-                            />
-                            <input
-                                type="password"
-                                placeholder="Password"
-                                value={newAdmin.password}
-                                onChange={(e) => setNewAdmin({ ...newAdmin, password: e.target.value })}
-                                required
-                            />
-                            <button type="submit" disabled={creationLoading}>
-                                {creationLoading ? 'Creating...' : 'Create Admin'}
-                            </button>
-                            {creationError && <p style={{ color: 'red' }}>{creationError}</p>}
-                        </form>
-                    </div>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
                 </div>
-            </main>
-            <Footer />
+            </div>
+
+            <div className="admin-content-card" style={{ marginTop: '2rem' }}>
+                <h3 className="card-title">Create New Admin</h3>
+                <form className="create-admin-form" onSubmit={handleCreateAdmin}>
+                    <input
+                        type="text"
+                        placeholder="Full Name"
+                        value={newAdmin.name}
+                        onChange={(e) => setNewAdmin({ ...newAdmin, name: e.target.value })}
+                        required
+                    />
+                    <input
+                        type="email"
+                        placeholder="Email"
+                        value={newAdmin.email}
+                        onChange={(e) => setNewAdmin({ ...newAdmin, email: e.target.value })}
+                        required
+                    />
+                    <input
+                        type="password"
+                        placeholder="Password"
+                        value={newAdmin.password}
+                        onChange={(e) => setNewAdmin({ ...newAdmin, password: e.target.value })}
+                        required
+                    />
+                    <Button type="submit" disabled={creationLoading}>
+                        {creationLoading ? 'Creating...' : 'Create Admin'}
+                    </Button>
+                    {creationError && <p style={{ color: 'red' }}>{creationError}</p>}
+                </form>
+            </div>
         </div>
     );
 };

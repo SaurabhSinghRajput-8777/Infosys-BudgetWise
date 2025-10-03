@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Login from './pages/Login.jsx';
 import Signup from './pages/Signup.jsx';
 import UserDashboard from './UserDashboard.jsx';
-import AdminDashboard from './pages/AdminDashboard.jsx'; // New import
+import AdminDashboardContainer from './pages/AdminDashboardContainer.jsx'; // Updated import
 import './index.css';
 
 const App = () => {
@@ -38,7 +38,7 @@ const App = () => {
       if (userRole === 'USER') {
         return <UserDashboard onLogout={handleLogout} />;
       } else if (userRole === 'ADMIN') {
-        return <AdminDashboard onLogout={handleLogout} />;
+        return <AdminDashboardContainer onLogout={handleLogout} />; // Updated component
       }
     } else {
       if (isLoginView) {

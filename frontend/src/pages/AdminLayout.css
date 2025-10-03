@@ -1,0 +1,29 @@
+/* Admin Layout CSS */
+
+/* Main container for the entire admin view */
+.admin-view-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #0A192F;
+    color: #F8F9FA;
+}
+
+/* Main content area that centers the content */
+.admin-main-content {
+    flex-grow: 1;
+    padding: 3rem;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: calc(100vh - 120px); /* Height of header + footer */
+}
+
+/* Reusable styles for main cards and forms */
+.content-card-wrapper {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
