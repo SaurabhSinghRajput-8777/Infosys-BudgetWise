@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import Button from '../components/Button.jsx'; // New import
+import Button from '../components/Button.jsx';
 
 const Login = ({ onToggleView, onLoginSuccess }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('USER');
+  const [role, setRole] = useState('USER'); // State to control the toggle button
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -19,12 +19,17 @@ const Login = ({ onToggleView, onLoginSuccess }) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        // Send the selected role to the backend for verification
+        body: JSON.stringify({ email, password, role }), 
       });
 
       const data = await response.json();
 
       if (!response.ok) {
+        // If status is 403 (FORBIDDEN) due to role mismatch, display the specific message
+        if (response.status === 403) {
+            throw new Error(data.message);
+        }
         throw new Error(data.message || 'Login failed. Please check your credentials.');
       }
       

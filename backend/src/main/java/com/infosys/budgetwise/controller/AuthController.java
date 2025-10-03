@@ -64,20 +64,31 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
         try {
-            // First check if user exists
-            User user = userRepository.findByEmail(authRequest.getEmail())
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + authRequest.getEmail()));
-
-            // Authenticate the user
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
             );
 
-            // Load user details and generate token
+            User user = userRepository.findByEmail(authRequest.getEmail())
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + authRequest.getEmail()));
+            
+            // NEW CHECK: Verify if the requested role matches the user's actual role
+            if (authRequest.getRole() != null && !authRequest.getRole().equals(user.getRole())) {
+                String requestedRole = authRequest.getRole().toLowerCase();
+                String actualRole = user.getRole().toLowerCase();
+                
+                String message;
+                if (requestedRole.equals("admin")) {
+                    message = "Access Denied: You are registered as a User, not an Admin.";
+                } else {
+                    message = "Access Denied: You are trying to log in as User, but are registered as Admin.";
+                }
+                
+                return new ResponseEntity<>(Collections.singletonMap("message", message), HttpStatus.FORBIDDEN);
+            }
+
             UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getEmail());
             String token = jwtUtil.generateToken(userDetails);
 
-            // Return token along with user info
             Map<String, Object> response = new HashMap<>();
             response.put("token", token);
             response.put("email", user.getEmail());
