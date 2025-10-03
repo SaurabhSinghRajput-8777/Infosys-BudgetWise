@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Button from '../components/Button.jsx'; // New import
+import Button from '../components/Button.jsx';
 
 const TransactionForm = ({ onSave, initialData, onCancel }) => {
     const [description, setDescription] = useState(initialData?.description || '');
@@ -15,9 +15,8 @@ const TransactionForm = ({ onSave, initialData, onCancel }) => {
             amount,
             category,
             type,
-            date: new Date().toISOString().split('T')[0] // current date
+            date: new Date().toISOString().split('T')[0]
         });
-        // Clear form after submission if it's a new transaction
         if (!initialData) {
             setDescription('');
             setAmount('');
@@ -28,7 +27,7 @@ const TransactionForm = ({ onSave, initialData, onCancel }) => {
     const categories = ['Food', 'Transport', 'Bills', 'Rent', 'Shopping', 'Miscellaneous', 'Salary'];
 
     return (
-        <div className="transaction-form-card">
+        <div className="page-container">
             <h3 className="card-title">{initialData ? 'Edit Transaction' : 'Add New Transaction'}</h3>
             <form onSubmit={handleSubmit}>
                 <input
@@ -58,7 +57,7 @@ const TransactionForm = ({ onSave, initialData, onCancel }) => {
                 <Button type="submit">
                     {initialData ? 'Save Changes' : 'Add Transaction'}
                 </Button>
-                {initialData && <Button type="button" onClick={onCancel}>Cancel</Button>}
+                {initialData && <Button type="button" onClick={onCancel} style={{ marginTop: '0.5rem' }}>Cancel</Button>}
             </form>
         </div>
     );
