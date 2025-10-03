@@ -35,7 +35,7 @@ const UserDashboard = ({ onLogout }) => {
     const renderPage = () => {
         switch (currentPage) {
             case 'Dashboard':
-                return <Dashboard />;
+                return <Dashboard onLogout={onLogout} />;
             case 'Budget':
                 return <Budget onBudgetSetupComplete={handleBudgetSetupComplete} />;
             case 'Transaction':
@@ -43,7 +43,7 @@ const UserDashboard = ({ onLogout }) => {
             case 'Profile':
                 return <Profile onLogout={onLogout} />;
             default:
-                return <Dashboard />;
+                return <Dashboard onLogout={onLogout} />;
         }
     };
 

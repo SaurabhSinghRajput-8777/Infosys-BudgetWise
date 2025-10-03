@@ -92,9 +92,9 @@ const Budget = ({ onBudgetSetupComplete }) => {
         }
 
         const budgetData = {
-            monthlyIncome: parseFloat(income),
-            savingGoal: parseFloat(savingGoal),
-            targetExpenses: parseFloat(targetExpenses),
+            monthlyIncome: parseFloat(income) || 0,
+            savingGoal: parseFloat(savingGoal) || 0,
+            targetExpenses: parseFloat(targetExpenses) || 0,
             categoryExpenses: Object.fromEntries(
                 Object.entries(dataForSubmission)
                     .filter(([, val]) => val !== null && parseFloat(val) > 0)
