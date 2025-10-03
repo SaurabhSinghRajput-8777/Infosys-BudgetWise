@@ -20,7 +20,7 @@ const TransactionList = ({ transactions, onEdit, onTransactionChange }) => {
     };
 
     return (
-        <div className="page-container transaction-list-container">
+        <div className="transaction-list-card">
             <h3 className="card-title">Recent Transactions</h3>
             {transactions.length > 0 ? (
                 <div className="transaction-list">

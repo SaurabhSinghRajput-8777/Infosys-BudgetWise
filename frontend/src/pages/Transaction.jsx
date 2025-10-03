@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TransactionForm from './TransactionForm.jsx';
 import TransactionList from './TransactionList.jsx';
-import '../UserDashboard.css';
+import './Transaction.css'; // Importing the new dedicated CSS file
+import '../UserDashboard.css'; // Keep this for Header/Footer/body styles
 
 const Transaction = () => {
     const [transactions, setTransactions] = useState([]);
@@ -75,15 +76,15 @@ const Transaction = () => {
     };
 
     if (loading) {
-        return <div className="page-container">Loading transactions...</div>;
+        return <div className="transactions-page-container"><div className="transaction-form-card">Loading transactions...</div></div>;
     }
 
     if (error) {
-        return <div className="page-container" style={{ color: 'red' }}>Error: {error}</div>;
+        return <div className="transactions-page-container"><div className="transaction-form-card" style={{ color: 'red' }}>Error: {error}</div></div>;
     }
 
     return (
-        <div className="transactions-flex-wrapper">
+        <div className="transactions-page-container">
             <TransactionForm
                 onSave={handleSaveTransaction}
                 initialData={editingTransaction}

@@ -27,7 +27,7 @@ const TransactionForm = ({ onSave, initialData, onCancel }) => {
     const categories = ['Food', 'Transport', 'Bills', 'Rent', 'Shopping', 'Miscellaneous', 'Salary'];
 
     return (
-        <div className="page-container">
+        <div className="transaction-form-card">
             <h3 className="card-title">{initialData ? 'Edit Transaction' : 'Add New Transaction'}</h3>
             <form onSubmit={handleSubmit}>
                 <input
