@@ -74,6 +74,7 @@ public class AuthController {
             // NEW CHECK: Verify if the requested role matches the user's actual role
             if (authRequest.getRole() != null && !authRequest.getRole().equals(user.getRole())) {
                 String requestedRole = authRequest.getRole().toLowerCase();
+                @SuppressWarnings("unused")
                 String actualRole = user.getRole().toLowerCase();
                 
                 String message;
