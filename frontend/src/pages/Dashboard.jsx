@@ -164,24 +164,24 @@ const Dashboard = ({ onLogout }) => {
                 <div className="summary-card">
                     <div className="card-icon"><FaMoneyBillWave /></div>
                     <div className="card-label">Total Balance</div>
-                    <div className="card-value net-savings">${netSavings.toFixed(2)}</div>
+                    <div className="card-value net-savings">₹ {netSavings.toFixed(2)}</div>
                 </div>
                 <div className="summary-card">
                     <div className="card-icon"><FaChartLine /></div>
                     <div className="card-label">Total Income</div>
-                    <div className="card-value income">${totalIncome.toFixed(2)}</div>
+                    <div className="card-value income">₹ {totalIncome.toFixed(2)}</div>
                 </div>
                 <div className="summary-card">
                     <div className="card-icon"><FaCreditCard /></div>
                     <div className="card-label">Total Expenses</div>
-                    <div className="card-value expenses">${totalExpenses.toFixed(2)}</div>
+                    <div className="card-value expenses">₹ {totalExpenses.toFixed(2)}</div>
                 </div>
                 <div className="summary-card">
                     <div className="card-icon"><FaPiggyBank /></div>
                     <div className="card-label">Savings Progress</div>
                     <div className="progress-container">
                         <div className="progress-text">
-                            ${netSavings.toFixed(2)} / ${budget?.savingGoal?.toFixed(2) || 'N/A'}
+                            ₹ {netSavings.toFixed(2)} / ₹ {budget?.savingGoal?.toFixed(2) || 'N/A'}
                         </div>
                         <div className="progress-bar-wrapper">
                             <div
@@ -252,7 +252,7 @@ const Dashboard = ({ onLogout }) => {
                 </div>
                 <div className="transaction-right">
                     <div className={`transaction-amount ${t.type.toLowerCase()}`}>
-                        {t.type === 'EXPENSE' ? '-' : '+'}${parseFloat(t.amount).toFixed(2)}
+                        {t.type === 'EXPENSE' ? '-' : '+'} ₹ {parseFloat(t.amount).toFixed(2)}
                     </div>
                 </div>
             </div>
@@ -265,7 +265,7 @@ const Dashboard = ({ onLogout }) => {
             <div className="dashboard-section upcoming-bills">
                 <h3 className="section-title">Upcoming Bills & Reminders</h3>
                 <ul className="reminders-list">
-                    <li><FaCalendarCheck /> Rent due in 5 days ($800)</li>
+                    <li><FaCalendarCheck /> Rent due in 5 days (₹ 800)</li>
                     <li><FaCalendarCheck /> Credit card payment due (Oct 25)</li>
                     <li><FaCalendarCheck /> EMI schedule (Oct 30)</li>
                 </ul>
