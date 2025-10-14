@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TransactionForm from './TransactionForm.jsx';
 import TransactionList from './TransactionList.jsx';
-import './Transaction.css'; // Importing the new dedicated CSS file
-import '../UserDashboard.css'; // Keep this for Header/Footer/body styles
+import './Transaction.css'; 
+import '../UserDashboard.css'; 
 
 const Transaction = () => {
     const [transactions, setTransactions] = useState([]);
