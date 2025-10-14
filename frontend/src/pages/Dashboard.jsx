@@ -36,7 +36,9 @@ const Dashboard = ({ onLogout }) => {
             setBudget(budgetRes.data);
 
             const transactionsRes = await axios.get('http://localhost:8080/api/transactions', config);
-            setTransactions(transactionsRes.data);
+            // Sort transactions by date in descending order (most recent first)
+            const sortedTransactions = transactionsRes.data.sort((a, b) => new Date(b.date) - new Date(a.date));
+            setTransactions(sortedTransactions);
         } catch (err) {
             if (err.response && (err.response.status === 401 || err.response.status === 403)) {
                 setError('Session expired. Please log in again.');
@@ -236,19 +238,22 @@ const Dashboard = ({ onLogout }) => {
 <div className="dashboard-section recent-transactions">
     <h3 className="section-title">Recent Transactions</h3>
     <div className="transaction-list">
-        {transactions.slice(0, 5).map((t, index) => (
-            <div className="transaction-card" key={index}>
+        {transactions.slice(0, 5).map(t => (
+            <div className="transaction-card" key={t.id}>
                 <div className="transaction-left">
                     <div className="transaction-icon">
                         {t.type === 'EXPENSE' ? <FaCreditCard /> : <FaMoneyBillWave />}
                     </div>
-                    <div>
+                    <div className="transaction-info-row">
                         <div className="transaction-category">{t.category || 'General'}</div>
+                        <div className="transaction-description">{t.description || 'No Description'}</div>
                         <div className="transaction-date">{new Date(t.date).toLocaleDateString()}</div>
                     </div>
                 </div>
-                <div className={`transaction-amount ${t.type.toLowerCase()}`}>
-                    {t.type === 'EXPENSE' ? '-' : '+'}${parseFloat(t.amount).toFixed(2)}
+                <div className="transaction-right">
+                    <div className={`transaction-amount ${t.type.toLowerCase()}`}>
+                        {t.type === 'EXPENSE' ? '-' : '+'}${parseFloat(t.amount).toFixed(2)}
+                    </div>
                 </div>
             </div>
         ))}
