@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Button from '../components/Button.jsx';
+import IntroImg from '../assets/Intro Img.png';
 
 const Login = ({ onToggleView, onLoginSuccess }) => {
   const [email, setEmail] = useState('');
@@ -59,13 +60,16 @@ const Login = ({ onToggleView, onLoginSuccess }) => {
 
   return (
     <div className="Landing-Page">
-      {/* Left Half: Background Image and Text */}
-      <div className="Left-Half">
-        <div className="Logo">💰 BudgetWise</div>
-        <div className="Left-Half-Content">
-          <h1>Welcome to BudgetWise</h1>
-          <p>Manage your finances with ease.</p>
-        </div>
+      {/* Left Half: Background Image*/}
+      <div 
+        className="Left-Half" 
+        style={{ 
+          backgroundImage: `url(${IntroImg})`, 
+          backgroundSize: 'cover', 
+          backgroundPosition: 'center', 
+          backgroundRepeat: 'no-repeat' 
+        }}
+      >
       </div>
 
       {/* Right Half: Login Card Container */}

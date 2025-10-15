@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import Button from '../components/Button.jsx'; // New import
+import Button from '../components/Button.jsx'; 
+import IntroImg from '../assets/Intro Img.png';
 
 const Signup = ({ onToggleView }) => {
   const [name, setName] = useState('');
@@ -42,13 +43,16 @@ const Signup = ({ onToggleView }) => {
 
   return (
     <div className="Landing-Page">
-      {/* Left Half: Background Image and Text */}
-      <div className="Left-Half">
-        <div className="Logo">💰 BudgetWise</div>
-        <div className="Left-Half-Content">
-          <h1>Welcome to BudgetWise</h1>
-          <p>Manage your finances with ease.</p>
-        </div>
+      {/* Left Half with the image */}
+      <div 
+        className="Left-Half" 
+        style={{ 
+          backgroundImage: `url(${IntroImg})`, 
+          backgroundSize: 'cover', 
+          backgroundPosition: 'center', 
+          backgroundRepeat: 'no-repeat' 
+        }}
+      >
       </div>
 
       {/* Right Half: Signup Card */}
