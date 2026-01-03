@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { getProfile, updateProfile } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 import type { User } from '../types/index';
-import { User as UserIcon, Mail, Shield, Save, DollarSign, PiggyBank, Target } from 'lucide-react';
+// Added LogOut to imports
+import { User as UserIcon, Mail, Shield, Save, DollarSign, PiggyBank, Target, LogOut } from 'lucide-react';
 
 const Profile = () => {
     const [profile, setProfile] = useState<User | null>(null);
@@ -16,7 +17,8 @@ const Profile = () => {
         savings: 0,
         targetExpenses: 0
     });
-    const { token } = useAuth();
+    // Added logout to destructuring
+    const { token, logout } = useAuth();
 
     useEffect(() => {
         fetchProfile();
@@ -88,46 +90,57 @@ const Profile = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 {/* Account Information */}
-                <div className="lg:col-span-1 bg-white rounded-xl shadow-lg p-5">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Account Info</h2>
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                            <div className="bg-blue-100 p-2 rounded-lg">
-                                <UserIcon className="text-blue-600" size={20} />
+                <div className="lg:col-span-1 bg-white rounded-xl shadow-lg p-5 flex flex-col justify-between">
+                    <div>
+                        <h2 className="text-2xl font-bold text-gray-900 mb-4">Account Info</h2>
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                                <div className="bg-blue-100 p-2 rounded-lg">
+                                    <UserIcon className="text-blue-600" size={20} />
+                                </div>
+                                <div>
+                                    <p className="text-base text-gray-600">Username</p>
+                                    <p className="font-bold text-lg text-gray-900">{profile.username}</p>
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-base text-gray-600">Username</p>
-                                <p className="font-bold text-lg text-gray-900">{profile.username}</p>
+                            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                                <div className="bg-blue-100 p-2 rounded-lg">
+                                    <UserIcon className="text-blue-600" size={20} />
+                                </div>
+                                <div>
+                                    <p className="text-base text-gray-600">Name</p>
+                                    <p className="font-bold text-lg text-gray-900">{(profile.firstName || '') + (profile.lastName ? ' ' + profile.lastName : '')}</p>
+                                </div>
                             </div>
-                        </div>
-                        <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                            <div className="bg-blue-100 p-2 rounded-lg">
-                                <UserIcon className="text-blue-600" size={20} />
+                            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                                <div className="bg-green-100 p-2 rounded-lg">
+                                    <Mail className="text-green-600" size={20} />
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-600">Email</p>
+                                    <p className="font-semibold text-gray-900">{profile.email}</p>
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-base text-gray-600">Name</p>
-                                <p className="font-bold text-lg text-gray-900">{(profile.firstName || '') + (profile.lastName ? ' ' + profile.lastName : '')}</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                            <div className="bg-green-100 p-2 rounded-lg">
-                                <Mail className="text-green-600" size={20} />
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-600">Email</p>
-                                <p className="font-semibold text-gray-900">{profile.email}</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                            <div className="bg-purple-100 p-2 rounded-lg">
-                                <Shield className="text-purple-600" size={20} />
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-600">Role</p>
-                                <p className="font-semibold text-gray-900">{profile.role}</p>
+                            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                                <div className="bg-purple-100 p-2 rounded-lg">
+                                    <Shield className="text-purple-600" size={20} />
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-600">Role</p>
+                                    <p className="font-semibold text-gray-900">{profile.role}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    
+                    {/* New Logout Button */}
+                    <button 
+                        onClick={logout} 
+                        className="w-full mt-6 flex items-center justify-center gap-2 px-4 py-3 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg transition-colors font-medium"
+                    >
+                        <LogOut size={20} />
+                        Logout
+                    </button>
                 </div>
 
                 {/* Financial Goals */}

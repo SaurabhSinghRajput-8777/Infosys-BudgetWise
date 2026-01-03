@@ -2,14 +2,15 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import {
-    Wallet, User, LogOut, Home, TrendingUp, PieChart,
+    Wallet, User, Home, TrendingUp, PieChart,
     Download, MessageCircle, PiggyBank, BarChart3, Shield, Users
 } from 'lucide-react';
 
 const Navbar = () => {
-    const { isAuthenticated, logout } = useAuth();
+    // Removed 'logout' from destructuring
+    const { isAuthenticated } = useAuth();
     const [role, setRole] = React.useState<string | null>(null);
-    const location = useLocation(); // 1. Get current route location
+    const location = useLocation();
 
     const brandLink = isAuthenticated ? '/dashboard' : '/';
 
@@ -18,23 +19,20 @@ const Navbar = () => {
             setRole(null);
             return;
         }
-        // fetch profile to obtain role
         import('../services/api').then(mod => {
             const token = localStorage.getItem('token') || '';
             mod.getProfile(token).then(res => setRole(res.data?.role)).catch(() => setRole(null));
         });
     }, [isAuthenticated]);
 
-    // 2. Helper to generate class names based on active state
     const getLinkClass = (path: string) => {
         const isActive = location.pathname === path;
         return `flex items-center gap-2 px-4 py-2 rounded-lg transition-colors font-medium ${isActive
-                ? 'bg-blue-50 text-blue-600' // Active State
-                : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600' // Inactive State
+                ? 'bg-blue-50 text-blue-600'
+                : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'
             }`;
     };
 
-    // Special helper for Owner link to maintain yellow theme
     const getOwnerLinkClass = (path: string) => {
         const isActive = location.pathname === path;
         return `flex items-center gap-2 px-4 py-2 rounded-lg transition-colors font-medium ${isActive
@@ -87,10 +85,7 @@ const Navbar = () => {
                                         <User size={20} />
                                         <span className="font-medium">Profile</span>
                                     </Link>
-                                    <button onClick={logout} className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors font-medium">
-                                        <LogOut size={20} />
-                                        Logout
-                                    </button>
+                                    {/* Logout button removed from here */}
                                 </>
                             ) : (
                                 <>
@@ -102,7 +97,6 @@ const Navbar = () => {
                                         <TrendingUp size={20} />
                                         <span className="font-medium">Transactions</span>
                                     </Link>
-                                    {/* --- NEW ANALYTICS LINK --- */}
                                     <Link to="/analytics" className={getLinkClass('/analytics')}>
                                         <BarChart3 size={20} />
                                         <span className="font-medium">Analytics</span>
@@ -127,10 +121,7 @@ const Navbar = () => {
                                         <User size={20} />
                                         <span className="font-medium">Profile</span>
                                     </Link>
-                                    <button onClick={logout} className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors font-medium">
-                                        <LogOut size={20} />
-                                        Logout
-                                    </button>
+                                    {/* Logout button removed from here */}
                                 </>
                             )
                         ) : (

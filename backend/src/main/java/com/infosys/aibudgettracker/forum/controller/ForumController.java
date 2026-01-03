@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("unused")
 @RestController
 @RequestMapping("/api/forum")
 @CrossOrigin(origins = "http://localhost:5173")
