@@ -2,6 +2,7 @@ package com.infosys.aibudgettracker.authservice.filter;
 
 import com.infosys.aibudgettracker.authservice.repository.UserRepository;
 import com.infosys.aibudgettracker.authservice.util.JwtUtil;
+import io.jsonwebtoken.ExpiredJwtException; //
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,7 +39,15 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         // Check if the header exists and starts with "Bearer "
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwt = authHeader.substring(7); // Extract the token
-            username = jwtUtil.getUsernameFromToken(jwt);
+            try {
+                username = jwtUtil.getUsernameFromToken(jwt);
+            } catch (ExpiredJwtException e) {
+                // Token is expired. We ignore it so the user can proceed anonymously.
+                // This prevents the filter from crashing on Login requests that accidentally carry old tokens.
+                System.out.println("JWT Token has expired: " + e.getMessage());
+            } catch (Exception e) {
+                System.out.println("Error parsing JWT: " + e.getMessage());
+            }
         }
 
         // If we have a username and the user is not already authenticated...
@@ -62,11 +71,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         .authorities(new java.util.ArrayList<>())
                         .build();
 
-                if (jwtUtil.validateToken(jwt)) {
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            userDetails, null, userDetails.getAuthorities());
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                // Double check validation (though parsing usually implies validity)
+                try {
+                    if (jwtUtil.validateToken(jwt)) {
+                        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                                userDetails, null, userDetails.getAuthorities());
+                        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authToken);
+                    }
+                } catch (Exception e) {
+                    // Ignore invalid tokens
                 }
             }
         }

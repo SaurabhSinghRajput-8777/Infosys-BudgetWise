@@ -199,7 +199,12 @@ const Dashboard = () => {
         return { totalIncome, totalExpenses, totalSavings, netBalance: totalIncome - totalExpenses - totalSavings };
     };
 
-    const lastSixMonthsData = incomeExpenseData.slice(Math.max(0, incomeExpenseData.length - 6)).map((d) => {
+    const currentMonthIndex = new Date().getMonth(); // 0 = Jan, 1 = Feb, etc.
+    // If we are in the first half of the year (Jan-Jun), show Jan-Jun (slice 0-6).
+    // Otherwise, show Jul-Dec (slice 6-12).
+    const startSlice = currentMonthIndex < 6 ? 0 : 6;
+    
+    const lastSixMonthsData = incomeExpenseData.slice(startSlice, startSlice + 6).map((d) => {
         const date = new Date(d.month);
         return {
             month: isNaN(date.getTime()) ? d.month : date.toLocaleString('default', { month: 'short' }),
@@ -335,7 +340,7 @@ const Dashboard = () => {
                     <h2 className="text-2xl font-bold text-gray-900 mb-4">Financial Analytics</h2>
                     <div className="flex-1 grid grid-rows-2 gap-1">
                         <div className="row-span-1 p-1">
-                            <h3 className="font-semibold mb-2">Income vs Expenses (last 6 months)</h3>
+                            <h3 className="font-semibold mb-2">Income vs Expenses (6 months)</h3>
                             <div className="w-full h-80">
                                 <ResponsiveContainer>
                                     <BarChart data={lastSixMonthsData} margin={{ top: 0, right: 6, left: 0, bottom: 2 }}>
